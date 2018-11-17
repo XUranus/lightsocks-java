@@ -36,14 +36,14 @@ public class EncryptForward extends Thread {
             int len = 0;
             while((len=in.read(buffer))!=-1) {
                 byte[] rawData = Arrays.copyOfRange(buffer,0,len);
-                Util.log("EncryptForward 39 "+Util.bytesToHexString(rawData));
-                Util.log("EncryptForward GET: "+Util.bytesToASCII(rawData));
+                //Util.log("EncryptForward 39 "+Util.bytesToHexString(rawData));
+                //Util.log("EncryptForward GET: "+Util.bytesToASCII(rawData));
                 byte[] encryptData =  Server.cryptor.encrypt(rawData);
                 if (encryptData == null) {
                     break; // 加密出错，退出
                 }
                 out.write(encryptData);
-                Util.log("EncryptForward SENT: "+Util.bytesToASCII(encryptData));
+                //Util.log("EncryptForward SENT: "+Util.bytesToASCII(encryptData));
                 out.flush();
                 if (len == buffer.length && len < BUFFER_SIZE_MAX) { // 自动调整缓冲区大小
                     buffer = new byte[len + BUFFER_SIZE_STEP];
@@ -51,7 +51,7 @@ public class EncryptForward extends Thread {
                     buffer = new byte[buffer.length - BUFFER_SIZE_STEP];
                 }
             }
-            Util.log("EncryptForward 51");
+            //Util.log("EncryptForward 51");
         } catch (Exception e) {
             e.printStackTrace();
         }

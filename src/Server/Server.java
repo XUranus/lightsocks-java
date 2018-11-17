@@ -2,6 +2,7 @@ package Server;
 
 import Crypto.AESCryptor;
 import Crypto.Cryptor;
+import Util.Util;
 
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -16,20 +17,23 @@ public class Server {
         this.port = port;
         this.password = password;
         cryptor = new AESCryptor(password);
-        System.out.println("Server created");
     }
 
     public void listen() {
        try {
-           System.out.println("Server Listening...");
+           Util.log("server start listening...");
            serverSocket = new ServerSocket(port);
            while(true) {
-               System.out.println("Server catch a socket");
                Socket socket = serverSocket.accept();
-               new ServerThread(socket).start();
+               new ServerThread(socket,this).start();
            }
        } catch (Exception e) {
            e.printStackTrace();
        }
+    }
+
+    public static void printHelpInfo() {
+        System.out.println("\nUsage:");
+        System.out.println("lightsocks-server [configFileName]\n");
     }
 }

@@ -41,7 +41,7 @@ public class Util {
 
     public static void log(Object obj) {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        System.out.println("["+ df.format(new Date()) +"]"+obj.toString());
+        System.out.println("["+ df.format(new Date()) +"] "+obj.toString());
     }
 
     public static JsonObject getJsonObjectFromFile(String filepath) {

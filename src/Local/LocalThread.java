@@ -16,14 +16,17 @@ public class LocalThread extends Thread {
     private Socket hostSocket;
     private Socket localSocket;
 
-    public LocalThread(String hostAddr,int hostPort, Socket localSocket) {
+    private Local mainThread;
+
+    public LocalThread(String hostAddr,int hostPort, Socket localSocket,Local mainThread) {
         try {
             this.localSocket = localSocket;
             this.hostSocket = new Socket(hostAddr,hostPort);
-            localIn = localSocket.getInputStream();
-            localOut = localSocket.getOutputStream();
-            hostIn = hostSocket.getInputStream();
-            hostOut = hostSocket.getOutputStream();
+            this.localIn = localSocket.getInputStream();
+            this.localOut = localSocket.getOutputStream();
+            this.hostIn = hostSocket.getInputStream();
+            this.hostOut = hostSocket.getOutputStream();
+            this.mainThread = mainThread;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -31,11 +34,6 @@ public class LocalThread extends Thread {
 
     public void run() {
         try {
-            Util.log("LocalThread 34");
-
-            //byte[] buf = new byte[100];
-            //int len = localIn.read(buf);
-            //Util.log("temp "+Util.bytesToHexString(buf,len));
 
             hostSocket.setSoTimeout(180000);
             localSocket.setSoTimeout(180000);

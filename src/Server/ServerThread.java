@@ -14,22 +14,27 @@ import java.nio.Buffer;
 import java.util.Arrays;
 
 public class ServerThread extends Thread{
+    private Server mainThread;
+
     private Socket socket;
+
     private InputStream in;
     private OutputStream out;
+
     private String remoteAddr;
     private int remotePort;
 
     private final int BUFFER_SIZE_DEFAULT = 1024;
 
 
-    public ServerThread(Socket socket) {
+    public ServerThread(Socket socket,Server mainThread) {
         try {
             this.socket = socket;
-            in = socket.getInputStream();
-            out = socket.getOutputStream();
-            remoteAddr = "";
-            remotePort = 0;
+            this.mainThread = mainThread;
+            this.in = socket.getInputStream();
+            this.out = socket.getOutputStream();
+            this.remoteAddr = "";
+            this.remotePort = 0;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -74,7 +79,7 @@ public class ServerThread extends Thread{
             remoteSocket.setSoTimeout(180000);
             remoteSocket.setKeepAlive(true);
 
-            Util.log(remoteSocket.getInetAddress()+":"+remoteSocket.getPort());
+            //Util.log(remoteSocket.getInetAddress()+":"+remoteSocket.getPort());
 
             new DecryptForward(in,remoteSocket.getOutputStream()).start();
             new EncryptForward(remoteSocket.getInputStream(),out).start();
