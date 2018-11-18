@@ -16,25 +16,29 @@ import java.util.Arrays;
 public class ServerThread extends Thread{
     private Server mainThread;
 
-    private Socket socket;
+    private Socket agentSocket; //被代理的socket
+    private Socket remoteSocket; //真正的远端socket
 
-    private InputStream in;
-    private OutputStream out;
+    private InputStream agentIn;
+    private OutputStream agentOut;
 
-    private String remoteAddr;
-    private int remotePort;
+    private InputStream remoteIn;
+    private OutputStream remoteOut;
 
     private final int BUFFER_SIZE_DEFAULT = 1024;
 
 
-    public ServerThread(Socket socket,Server mainThread) {
+    public ServerThread(Socket agentSocket,Server mainThread) {
         try {
-            this.socket = socket;
+            this.agentSocket = agentSocket;
+            this.remoteSocket = null;
+
             this.mainThread = mainThread;
-            this.in = socket.getInputStream();
-            this.out = socket.getOutputStream();
-            this.remoteAddr = "";
-            this.remotePort = 0;
+
+            this.agentIn = agentSocket.getInputStream();
+            this.agentOut = agentSocket.getOutputStream();
+            this.remoteIn = null;
+            this.remoteOut = null;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -42,9 +46,13 @@ public class ServerThread extends Thread{
 
     public void over() {
         try {
-            in.close();
-            out.close();
-            socket.close();
+            agentIn.close();
+            agentOut.close();
+            agentSocket.close();
+
+            remoteIn.close();
+            remoteOut.close();
+            remoteSocket.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -52,22 +60,14 @@ public class ServerThread extends Thread{
 
     public void run() {
         try {
-            socket.setSoTimeout(180000);
-            socket.setKeepAlive(true);
+            agentSocket.setSoTimeout(180000);
+            agentSocket.setKeepAlive(true);
 
-            if(handleSock5HandShake()) Util.log("handshake verify success");
-            else Util.log("handshake verify failed");
-
-            if(handleSock5Connection()) Util.log("connection verify success");
-            else Util.log("connection verify failed");
+            if(!handleSock5HandShake()) return;
+            if(!handleSock5Connection()) return;
 
             startForward();
-           /* Util.log("start to foward...");
-            byte[] tt =  decryptRead(in);
-            Util.log("client sent : "+Util.bytesToASCII(tt));
-            */
 
-            //new EncryptForward()
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -75,42 +75,46 @@ public class ServerThread extends Thread{
 
     private void startForward() {
         try {
-            Socket remoteSocket = new Socket(remoteAddr,remotePort);
             remoteSocket.setSoTimeout(180000);
             remoteSocket.setKeepAlive(true);
 
-            //Util.log(remoteSocket.getInetAddress()+":"+remoteSocket.getPort());
-
-            new DecryptForward(in,remoteSocket.getOutputStream()).start();
-            new EncryptForward(remoteSocket.getInputStream(),out).start();
+            new DecryptForward(agentIn,remoteOut).start();
+            new EncryptForward(remoteIn,agentOut).start();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private boolean handleSock5HandShake() {
-       byte[] data = decryptRead(in);
+       byte[] data = decryptRead(agentIn);
        if(data==null || data[0]!=0x05) return false;
 
-       byte[] respose = new byte[2];
-       respose[0] = 0x05;
-       respose[1] = 0x00;
-       encryptWrite(out,respose);
+       byte[] response = new byte[2];
+       response[0] = 0x05;
+       response[1] = 0x00;
+       encryptWrite(agentOut,response);
        return true;
     }
 
 
     public boolean handleSock5Connection() {
-        byte[] data = decryptRead(in);
-        //Util.log("handleConnection 83 "+Util.bytesToHexString(data));
+        byte[] data = decryptRead(agentIn);
         SocksConnectionRequest request = SocksConnectionRequest.getNewInstance(data);
         if (request==null) return false;
 
-        remoteAddr = request.getAddress();
-        remotePort = request.getDstPort();
+        String remoteAddr = request.getAddress();
+        int remotePort = request.getDstPort();
+        try {
+            remoteSocket = new Socket(remoteAddr,remotePort);
+            remoteOut = remoteSocket.getOutputStream();
+            remoteIn = remoteSocket.getInputStream();
+        } catch (Exception e) { //如果远端没有成功建立链接
+            e.printStackTrace();
+            return false;
+        }
 
-        byte[] response = SocksConnectionResponse.responseBytes();
-        encryptWrite(out,response);
+        byte[] response = SocksConnectionResponse.responseBytes();//TODO:这里可以根据上面是否成功链接返回不同报文
+        encryptWrite(agentOut,response);
 
         return true;
     }
@@ -144,6 +148,7 @@ public class ServerThread extends Thread{
         }
         return null;
     }
+
 
     private void encryptWrite(OutputStream out,byte[] rawData) {
         try {
