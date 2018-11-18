@@ -1,4 +1,5 @@
 import Crypto.AESCryptor;
+import Crypto.Cryptor;
 import Local.Local;
 import Server.Server;
 import Util.LocalConfig;
@@ -15,10 +16,17 @@ public class StartLocal {
             Util.log("error: failed to load local config, exit.");
             System.exit(1);
         }
-        Local local = new Local(localConfig.getHost(),localConfig.getHostPort(),localConfig.getLocalPort(),localConfig.getPassword());
+        Local local = new Local(localConfig.getHost(),localConfig.getHostPort(),localConfig.getLocalPort());
         if(local == null) {
-            Util.log("error: faild to create local socket,exit.");
+            Util.log("error: failed to create local socket,exit.");
             System.exit(1);
+        }
+        Cryptor cryptor = localConfig.getCryptor();
+        if(cryptor==null) {
+            Util.log("error: failed to init cipher,exit.");
+            System.exit(1);
+        } else {
+            local.cryptor = cryptor;
         }
         local.listen();
     }

@@ -12,18 +12,15 @@ public class Local {
     private String hostAddr;
     private int hostPort;
     private int localPort;
-    private String password;
 
     private ServerSocket localSocket;
     public static Cryptor cryptor;
 
-    public Local(String host,int hostPort,int localPort,String password) {
+    public Local(String host,int hostPort,int localPort) {
         this.hostAddr = host;
         this.hostPort = hostPort;
         this.localPort = localPort;
-        this.password = password;
         localSocket = null;
-        cryptor = new AESCryptor(password);
     }
 
 

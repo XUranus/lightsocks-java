@@ -9,14 +9,11 @@ import java.net.Socket;
 
 public class Server {
     private int port;
-    private String password;
     private ServerSocket serverSocket;
     public static Cryptor cryptor;
 
-    public Server(int port,String password) {
+    public Server(int port) {
         this.port = port;
-        this.password = password;
-        cryptor = new AESCryptor(password);
     }
 
     public void listen() {

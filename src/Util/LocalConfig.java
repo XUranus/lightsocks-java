@@ -1,4 +1,5 @@
 package Util;
+import Crypto.Cryptor;
 import com.google.gson.JsonObject;
 
 public class LocalConfig {
@@ -13,6 +14,7 @@ public class LocalConfig {
     private int hostPort;
     private int localPort;
     private String method;
+    private Cryptor cryptor;
 
     public static LocalConfig loadConfigFromFile(String filepath) {
         if(instance !=null) return instance;
@@ -39,6 +41,7 @@ public class LocalConfig {
         this.host = obj.get("host").getAsString();
         this.localPort = obj.get("localPort").getAsInt();
         this.method = obj.get("method").getAsString();
+        this.cryptor = Cryptor.createNewCryptor(method,password);
     }
 
     public String toString() {
@@ -70,4 +73,6 @@ public class LocalConfig {
     public String getPassword() {
         return password;
     }
+
+    public Cryptor getCryptor() {return cryptor;}
 }

@@ -75,6 +75,7 @@ public class ServerThread extends Thread{
 
     private void startForward() {
         try {
+            //Util.log(remoteSocket.getInetAddress());
             remoteSocket.setSoTimeout(180000);
             remoteSocket.setKeepAlive(true);
 
@@ -105,6 +106,7 @@ public class ServerThread extends Thread{
         String remoteAddr = request.getAddress();
         int remotePort = request.getDstPort();
         try {
+            Util.log("remote:"+remoteAddr+":"+remotePort);
             remoteSocket = new Socket(remoteAddr,remotePort);
             remoteOut = remoteSocket.getOutputStream();
             remoteIn = remoteSocket.getInputStream();

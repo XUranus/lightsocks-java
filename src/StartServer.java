@@ -1,3 +1,4 @@
+import Crypto.Cryptor;
 import Server.Server;
 import Util.ServerConfig;
 import Util.Util;
@@ -13,10 +14,17 @@ public class StartServer {
             Util.log("error: failed to load server config, exit.");
             System.exit(1);
         }
-        Server server = new Server(serverConfig.getPort(),serverConfig.getPassword());
+        Server server = new Server(serverConfig.getPort());
         if(server == null) {
             Util.log("error: faild to create server socket,exit.");
             System.exit(1);
+        }
+        Cryptor cryptor = serverConfig.getCryptor();
+        if(cryptor==null) {
+            Util.log("error: failed to init cipher,exit.");
+            System.exit(1);
+        } else {
+            server.cryptor = cryptor;
         }
         server.listen();
     }
