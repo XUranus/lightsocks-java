@@ -37,8 +37,8 @@
     **注意！当前AES加密还没完善，请勿使用**
 
 3. 运行  
-    本地：`java StartLocal localConfig.json`  
-    服务器：`java StartServer serverCofig.json`
+    本地：`java -jar lightsocks_local.jar -c localConfig.json`  
+    服务器：`java -jar lightsocks_server.jar -c serverCofig.json`
 
 4. 配置本地socks5代理  
     地址为服务器地址，端口为`localConfig.json`中的`localPort`
