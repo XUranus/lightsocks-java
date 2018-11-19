@@ -5,11 +5,18 @@ import Util.Util;
 
 public class StartLocal {
     public static void main(String [] args) {
-        if(args.length!=1) {
-            Local.printHelpInfo();
-            System.exit(0);
+        String filename = "/etc/localConfig.json";
+        for(int i=0;i<args.length;i++) {
+            if(args[i].equals("-c") && i+1<args.length) {
+                filename = args[i+1];
+                break;
+            } else if(args[i].equals("-h")) {
+                Local.printHelpInfo();
+            }
         }
-        LocalConfig localConfig = LocalConfig.loadConfigFromFile(args[0]);
+
+
+        LocalConfig localConfig = LocalConfig.loadConfigFromFile(filename);
         if(localConfig == null) {
             Util.log("error: failed to load local config, exit.");
             System.exit(1);
