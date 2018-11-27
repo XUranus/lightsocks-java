@@ -1,5 +1,6 @@
 package SocketThread;
 
+import Crypto.Cryptor;
 import Server.Server;
 import Util.Util;
 
@@ -17,6 +18,7 @@ read from A and encrypt send to B
     private OutputStream out;
 
     private byte[] buffer;
+    private Cryptor cryptor;
 
     private static final int BUFFER_SIZE_MIN = 1024 * 128; // 缓冲区最小值，128K
     private static final int BUFFER_SIZE_MAX = 1024 * 512; // 缓冲区最大值，512K
@@ -24,11 +26,12 @@ read from A and encrypt send to B
 
     private boolean isRunning;
 
-    public DecryptForward(InputStream in,OutputStream out) {
+    public DecryptForward(InputStream in, OutputStream out, Cryptor cryptor) {
         this.in = in;
         this.out = out;
         this.buffer = new byte[BUFFER_SIZE_MIN];
         this.isRunning = true;
+        this.cryptor = cryptor;
     }
 
     public void run() {
@@ -37,7 +40,7 @@ read from A and encrypt send to B
             while((len=in.read(buffer))!=-1 && isRunning) {
                 byte[] encryptData = Arrays.copyOfRange(buffer,0,len);
                 Util.log("get en-len="+encryptData.length);
-                byte[] decryptData =  Server.cryptor.decrypt(encryptData);
+                byte[] decryptData =  cryptor.decrypt(encryptData);
 
                 //Util.log("DecryptForward GET: "+Util.bytesToASCII(encryptData));
 

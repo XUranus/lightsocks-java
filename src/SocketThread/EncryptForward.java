@@ -1,5 +1,6 @@
 package SocketThread;
 
+import Crypto.Cryptor;
 import Server.Server;
 import Util.Util;
 
@@ -21,6 +22,7 @@ public class EncryptForward extends Thread {
     //private Object parent;
 
     private byte[] buffer;
+    private Cryptor cryptor;
 
     private boolean isRunning;
 
@@ -28,11 +30,12 @@ public class EncryptForward extends Thread {
     private static final int BUFFER_SIZE_MAX = 1024 * 512; // 缓冲区最大值，512K
     private static final int BUFFER_SIZE_STEP = 1024 * 128; // 缓冲区自动调整的步长值，128K
 
-    public EncryptForward(InputStream in,OutputStream out) {
+    public EncryptForward(InputStream in, OutputStream out, Cryptor cryptor) {
         this.buffer = new byte[BUFFER_SIZE_MIN];
         this.in = in;
         this.out = out;
         this.isRunning = true;
+        this.cryptor = cryptor;
     }
 
     public void run() {
@@ -42,7 +45,7 @@ public class EncryptForward extends Thread {
                 byte[] rawData = Arrays.copyOfRange(buffer, 0, len);
                 //Util.log("EncryptForward 39 "+Util.bytesToHexString(rawData));
                 //Util.log("EncryptForward GET: "+Util.bytesToASCII(rawData));
-                byte[] encryptData = Server.cryptor.encrypt(rawData);
+                byte[] encryptData = cryptor.encrypt(rawData);
                 if (encryptData == null) {
                     break; // 加密出错，退出
                 }

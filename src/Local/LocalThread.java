@@ -41,8 +41,8 @@ public class LocalThread extends Thread {
             hostSocket.setKeepAlive(true);
             localSocket.setKeepAlive(true);
 
-            new EncryptForward(localIn,hostOut).start();
-            new DecryptForward(hostIn,localOut).start();
+            new EncryptForward(localIn,hostOut,Local.cryptor).start();
+            new DecryptForward(hostIn,localOut,Local.cryptor).start();
 
         } catch (Exception e) {
             e.printStackTrace();

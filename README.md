@@ -7,6 +7,8 @@
 ## 参考
 另一位作者用golang实现的 [lightsocks](https://github.com/gwuhaolin/lightsocks)，关于ss代理的原理可以看他的教程：[你也能写个 Shadowsocks](https://github.com/gwuhaolin/blog/issues/12)
 
+本人用java实现的一些细节写在博文里：[自己写个shadowsocks](https://xuranus.github.io/2018/11/27/%E8%87%AA%E5%B7%B1%E5%86%99%E4%B8%AAshadowsocks/)
+
 ## 使用
 1. 本地配置
     ```js
@@ -32,8 +34,8 @@
 
     支持的method:
      - none(无加密，不要使用)
-     - simple(256个byte乱排构成的十六进制密码，上述例子中所示，已经实现，有一定的加密能力)
-     - AES(尚在学习密码学...未编写)
+     - simple(256个byte乱排构成的十六进制密码，上述例子中所示，原理为置换算法，已经实现，有一定的加密能力)
+     - AES(尚在学习密码学，bug很多)
     **注意！当前AES加密还没完善，请勿使用**
 
 3. 运行  

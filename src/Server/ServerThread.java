@@ -79,8 +79,8 @@ public class ServerThread extends Thread{
             remoteSocket.setSoTimeout(180000);
             remoteSocket.setKeepAlive(true);
 
-            new DecryptForward(agentIn,remoteOut).start();
-            new EncryptForward(remoteIn,agentOut).start();
+            new DecryptForward(agentIn,remoteOut,Server.cryptor).start();
+            new EncryptForward(remoteIn,agentOut,Server.cryptor).start();
         } catch (Exception e) {
             e.printStackTrace();
         }
