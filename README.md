@@ -50,4 +50,4 @@
 - [lightsocks-python](https://github.com/linw1995/lightsocks-python)：Python语言 实现版本
 - [lightsocks-android](https://github.com/XanthusL/LightSocks-Android)：Android 实现版本
 - [lightsocks-node](https://github.com/chrisyer/lightsocks-nodejs)：Node.js 实现版本
-- [lightsocks-c](https://github.com/LeeReindeer/lightsocks-c)：C语言 实现版本
+- [lightsocks-c](https://github.com/LeeReindeer/lightsocks-c)：C语言 实现版本 
