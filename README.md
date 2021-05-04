@@ -9,6 +9,13 @@
 
 本人用java实现的一些细节写在博文里：[自己写个shadowsocks](https://xuranus.github.io/2018/11/27/%E8%87%AA%E5%B7%B1%E5%86%99%E4%B8%AAshadowsocks/)
 
+
+## 编译
+```
+mvn package -Dmaven.test.skip=true
+```
+生成的jar包位于`target`下。
+
 ## 使用
 1. 本地配置
     ```js
@@ -39,11 +46,16 @@
     **注意！当前AES加密还没完善，请勿使用**
 
 3. 运行  
-    本地：`java -jar lightsocks_local.jar -c localConfig.json`  
-    服务器：`java -jar lightsocks_server.jar -c serverCofig.json`
+    本地：`java -jar lightsocks.jar -c localConfig.json --client`  
+    服务器：`java -jar lightsocks.jar -c serverCofig.json --server`
 
 4. 配置本地socks5代理  
     地址为服务器地址，端口为`localConfig.json`中的`localPort`
+
+测试：
+```bash
+socks_proxy=127.0.0.1:8080 curl baidu.com
+```
 
 ## 其它语言实现
 - [lightsocks-golang](https://github.com/gwuhaolin/lightsocks)：Golang实现版本
@@ -51,3 +63,7 @@
 - [lightsocks-android](https://github.com/XanthusL/LightSocks-Android)：Android 实现版本
 - [lightsocks-node](https://github.com/chrisyer/lightsocks-nodejs)：Node.js 实现版本
 - [lightsocks-c](https://github.com/LeeReindeer/lightsocks-c)：C语言 实现版本 
+
+
+## 更新
+ - 2021-05-04：修改为maven项目，使用Logback日志
