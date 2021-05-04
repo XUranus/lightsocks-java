@@ -1,13 +1,13 @@
-package Local;
+package client;
 
-import SocketThread.DecryptForward;
-import SocketThread.EncryptForward;
-import Util.Util;
+import socketThread.DecryptForward;
+import socketThread.EncryptForward;
 
 import java.io.*;
 import java.net.Socket;
 
-public class LocalThread extends Thread {
+public class ClientThread extends Thread {
+
     private InputStream localIn;
     private OutputStream localOut;
     private InputStream hostIn;
@@ -16,9 +16,9 @@ public class LocalThread extends Thread {
     private Socket hostSocket;
     private Socket localSocket;
 
-    private Local mainThread;
+    private Client mainThread;
 
-    public LocalThread(String hostAddr,int hostPort, Socket localSocket,Local mainThread) {
+    public ClientThread(String hostAddr, int hostPort, Socket localSocket, Client mainThread) {
         try {
             this.localSocket = localSocket;
             this.hostSocket = new Socket(hostAddr,hostPort);
@@ -41,8 +41,8 @@ public class LocalThread extends Thread {
             hostSocket.setKeepAlive(true);
             localSocket.setKeepAlive(true);
 
-            new EncryptForward(localIn,hostOut,Local.cryptor).start();
-            new DecryptForward(hostIn,localOut,Local.cryptor).start();
+            new EncryptForward(localIn,hostOut, mainThread.crypto).start();
+            new DecryptForward(hostIn,localOut, mainThread.crypto).start();
 
         } catch (Exception e) {
             e.printStackTrace();

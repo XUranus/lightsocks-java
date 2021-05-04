@@ -1,7 +1,7 @@
-package Util;
-
-import Crypto.Cryptor;
+package util;
 import com.google.gson.JsonObject;
+import crypto.Crypto;
+import crypto.CryptoFactory;
 
 public class ServerConfig {
     /*
@@ -13,7 +13,7 @@ public class ServerConfig {
     private String password;
     private int port;
     private String method;
-    private Cryptor cryptor;
+    private Crypto crypto;
 
     public static ServerConfig loadConfigFromFile(String filepath) {
         if(instance !=null) return instance;
@@ -36,7 +36,7 @@ public class ServerConfig {
         this.password = obj.get("password").getAsString();
         this.port = obj.get("port").getAsInt();
         this.method = obj.get("method").getAsString();
-        this.cryptor = Cryptor.createNewCryptor(method,password);
+        this.crypto = CryptoFactory.createCrypto(method,password);
     }
 
     public String toString() {
@@ -58,7 +58,7 @@ public class ServerConfig {
         return port;
     }
 
-    public Cryptor getCryptor() {
-        return cryptor;
+    public Crypto getCrypto() {
+        return crypto;
     }
 }

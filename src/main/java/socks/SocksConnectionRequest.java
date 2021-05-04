@@ -1,4 +1,4 @@
-package Socks;
+package socks;
 
 
 import java.util.Arrays;

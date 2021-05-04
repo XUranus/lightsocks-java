@@ -1,10 +1,17 @@
-package Crypto;
+package crypto;
 
-import Util.Util;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import socketThread.EncryptForward;
+import util.Util;
 
 import java.util.Random;
 
-public class SimpleCrypto implements Cryptor{
+public class SimpleCrypto implements Crypto {
+
+    private final static Logger logger = LoggerFactory.getLogger(SimpleCrypto.class);
+
     private byte[] keyBytes;
     private byte[] decodeKey;
     private byte[] encodeKey;
@@ -24,7 +31,7 @@ public class SimpleCrypto implements Cryptor{
 
     public static SimpleCrypto getSimplieCrypto(String hexKeyString) {
         if(hexKeyString==null || hexKeyString.length()!=256*2) {
-            Util.log("simple cryptor key length must be 512!");
+            logger.info("simple cryptor key length must be 512!");
             return null;
         }
         hexKeyString = hexKeyString.toUpperCase();

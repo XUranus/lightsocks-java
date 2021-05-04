@@ -1,15 +1,21 @@
-package Server;
+package server;
 
-import Crypto.Cryptor;
-import Util.Util;
+
+import crypto.Crypto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import socketThread.EncryptForward;
 
 import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Server {
+
+    private final static Logger logger = LoggerFactory.getLogger(Server.class);
+
     private int port;
     private ServerSocket serverSocket;
-    public static Cryptor cryptor;
+    public static Crypto crypto;
 
     public Server(int port) {
         this.port = port;
@@ -17,7 +23,7 @@ public class Server {
 
     public void listen() {
        try {
-           Util.log("server start listening...");
+           logger.info("server start listening...");
            serverSocket = new ServerSocket(port);
            while(true) {
                Socket socket = serverSocket.accept();
@@ -28,8 +34,4 @@ public class Server {
        }
     }
 
-    public static void printHelpInfo() {
-        System.out.println("\nUsage:");
-        System.out.println("lightsocks-server [configFileName]\n");
-    }
 }

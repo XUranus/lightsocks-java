@@ -1,19 +1,21 @@
-package Server;
+package server;
 
-import SocketThread.DecryptForward;
-import SocketThread.EncryptForward;
-import Socks.SocksConnectionRequest;
-import Socks.SocksConnectionResponse;
-import Util.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import socketThread.DecryptForward;
+import socketThread.EncryptForward;
+import socks.SocksConnectionRequest;
+import socks.SocksConnectionResponse;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.Array;
 import java.net.Socket;
-import java.nio.Buffer;
 import java.util.Arrays;
 
 public class ServerThread extends Thread{
+
+    private final static Logger logger = LoggerFactory.getLogger(ServerThread.class);
+
     private Server mainThread;
 
     private Socket agentSocket; //被代理的socket
@@ -79,8 +81,8 @@ public class ServerThread extends Thread{
             remoteSocket.setSoTimeout(180000);
             remoteSocket.setKeepAlive(true);
 
-            new DecryptForward(agentIn,remoteOut,Server.cryptor).start();
-            new EncryptForward(remoteIn,agentOut,Server.cryptor).start();
+            new DecryptForward(agentIn,remoteOut,Server.crypto).start();
+            new EncryptForward(remoteIn,agentOut,Server.crypto).start();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -106,7 +108,7 @@ public class ServerThread extends Thread{
         String remoteAddr = request.getAddress();
         int remotePort = request.getDstPort();
         try {
-            Util.log("remote:"+remoteAddr+":"+remotePort);
+            logger.info("remote:"+remoteAddr+":"+remotePort);
             remoteSocket = new Socket(remoteAddr,remotePort);
             remoteOut = remoteSocket.getOutputStream();
             remoteIn = remoteSocket.getInputStream();
@@ -143,7 +145,7 @@ public class ServerThread extends Thread{
             }
 
             encryptData = Arrays.copyOfRange(encryptData,0,encryptDataSize);
-            byte[] decryptData = Server.cryptor.decrypt(encryptData);
+            byte[] decryptData = Server.crypto.decrypt(encryptData);
             return decryptData;
         } catch (Exception e) {
             e.printStackTrace();
@@ -154,7 +156,7 @@ public class ServerThread extends Thread{
 
     private void encryptWrite(OutputStream out,byte[] rawData) {
         try {
-            byte[] encryptData = Server.cryptor.encrypt(rawData);
+            byte[] encryptData = Server.crypto.encrypt(rawData);
             out.write(encryptData);
         } catch (Exception e) {
             e.printStackTrace();

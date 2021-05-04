@@ -1,6 +1,5 @@
-package Util;
+package util;
 
-import Crypto.Cryptor;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -8,8 +7,6 @@ import com.google.gson.JsonParser;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class Util {
     public static String bytesToHexString(byte[] bArray, int len) {
@@ -38,11 +35,6 @@ public class Util {
 
     public static String bytesToHexString(byte[] bArray) {
         return bytesToHexString(bArray,bArray.length);
-    }
-
-    public static void log(Object obj) {
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        System.out.println("["+ df.format(new Date()) +"] "+obj.toString());
     }
 
     public static JsonObject getJsonObjectFromFile(String filepath) {

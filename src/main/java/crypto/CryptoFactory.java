@@ -1,16 +1,14 @@
-package Crypto;
+package crypto;
 
-public interface Cryptor {
-    public abstract byte[] encrypt(byte[] data);
-    public abstract byte[] decrypt(byte[] data);
+public class CryptoFactory {
 
-    public static Cryptor createNewCryptor(String method,String key) {
+    public static Crypto createCrypto(String method, String key) {
         method = method.toLowerCase();
         switch (method) {
             case "aes-256-cfb":
                 return new AES_256_CFB(key);
             case "none":
-                return new NoPasswordCryptor();
+                return new NoPasswordCrypto();
             case "simple":
                 return SimpleCrypto.getSimplieCrypto(key);
         }

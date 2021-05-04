@@ -1,4 +1,4 @@
-package Socks;
+package socks;
 
 public class SocksConnectionResponse {
 
