@@ -17,11 +17,11 @@ public class DecryptForward extends Thread {
 
     private final static Logger logger = LoggerFactory.getLogger(DecryptForward.class);
 
-    private InputStream in;
-    private OutputStream out;
+    private final InputStream in;
+    private final OutputStream out;
 
     private byte[] buffer;
-    private Crypto crypto;
+    private final Crypto crypto;
 
     private static final int BUFFER_SIZE_MIN = 1024 * 128; // 缓冲区最小值，128K
     private static final int BUFFER_SIZE_MAX = 1024 * 512; // 缓冲区最大值，512K

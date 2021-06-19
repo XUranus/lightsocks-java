@@ -27,7 +27,7 @@ public class ServerThread extends Thread{
     private InputStream remoteIn;
     private OutputStream remoteOut;
 
-    private final int BUFFER_SIZE_DEFAULT = 1024;
+    private final static int BUFFER_SIZE_DEFAULT = 1024;
 
 
     public ServerThread(Socket agentSocket,Server mainThread) {
@@ -65,8 +65,15 @@ public class ServerThread extends Thread{
             agentSocket.setSoTimeout(180000);
             agentSocket.setKeepAlive(true);
 
-            if(!handleSock5HandShake()) return;
-            if(!handleSock5Connection()) return;
+            if(!handleSock5HandShake()) {
+                logger.error("handleSock5HandShake failed");
+                return;
+            }
+
+            if(!handleSock5Connection()) {
+                logger.error("handleSock5Connection failed");
+                return;
+            }
 
             startForward();
 
@@ -77,7 +84,6 @@ public class ServerThread extends Thread{
 
     private void startForward() {
         try {
-            //Util.log(remoteSocket.getInetAddress());
             remoteSocket.setSoTimeout(180000);
             remoteSocket.setKeepAlive(true);
 
@@ -102,13 +108,14 @@ public class ServerThread extends Thread{
 
     public boolean handleSock5Connection() {
         byte[] data = decryptRead(agentIn);
+        assert data != null;
         SocksConnectionRequest request = SocksConnectionRequest.getNewInstance(data);
         if (request==null) return false;
 
         String remoteAddr = request.getAddress();
         int remotePort = request.getDstPort();
         try {
-            logger.info("remote:"+remoteAddr+":"+remotePort);
+            logger.info("remote:" + remoteAddr+ ":" + remotePort);
             remoteSocket = new Socket(remoteAddr,remotePort);
             remoteOut = remoteSocket.getOutputStream();
             remoteIn = remoteSocket.getInputStream();
@@ -138,15 +145,14 @@ public class ServerThread extends Thread{
                 if(encryptData.length<len+encryptDataSize) { //扩容
                     byte[] tempData = encryptData;
                     encryptData = new byte[encryptData.length+BUFFER_SIZE_DEFAULT];
-                    for(int i=0;i<encryptDataSize;i++) encryptData[i] = tempData[i];
+                    if (encryptDataSize >= 0) System.arraycopy(tempData, 0, encryptData, 0, encryptDataSize);
                 }
                 System.arraycopy(buffer,0,encryptData,encryptDataSize,len);
                 encryptDataSize += len;
             }
 
             encryptData = Arrays.copyOfRange(encryptData,0,encryptDataSize);
-            byte[] decryptData = Server.crypto.decrypt(encryptData);
-            return decryptData;
+            return Server.crypto.decrypt(encryptData);
         } catch (Exception e) {
             e.printStackTrace();
         }

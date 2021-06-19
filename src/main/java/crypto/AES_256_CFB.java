@@ -5,7 +5,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.util.Base64;
 
 public class AES_256_CFB implements Crypto {
-    private String key;
+    private final String key;
     public AES_256_CFB(String key) {
         this.key = key;
     }

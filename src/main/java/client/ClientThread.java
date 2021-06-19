@@ -41,8 +41,8 @@ public class ClientThread extends Thread {
             hostSocket.setKeepAlive(true);
             localSocket.setKeepAlive(true);
 
-            new EncryptForward(localIn,hostOut, mainThread.crypto).start();
-            new DecryptForward(hostIn,localOut, mainThread.crypto).start();
+            new EncryptForward(localIn,hostOut, Client.crypto).start();
+            new DecryptForward(hostIn,localOut, Client.crypto).start();
 
         } catch (Exception e) {
             e.printStackTrace();

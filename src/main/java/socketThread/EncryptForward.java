@@ -17,12 +17,12 @@ public class EncryptForward extends Thread {
 
     private final static Logger logger = LoggerFactory.getLogger(EncryptForward.class);
 
-    private InputStream in;
-    private OutputStream out;
+    private final InputStream in;
+    private final OutputStream out;
     //private Object parent;
 
     private byte[] buffer;
-    private Crypto crypto;
+    private final Crypto crypto;
 
     private boolean isRunning;
 

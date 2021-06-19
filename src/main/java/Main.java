@@ -6,17 +6,18 @@ import server.Server;
 import util.LocalConfig;
 import util.Mode;
 import util.ServerConfig;
+import util.Util;
 
 public class Main {
 
-    private static Logger logger = LoggerFactory.getLogger(Main.class);
+    private final static Logger logger = LoggerFactory.getLogger(Main.class);
 
     private static void printHelpInfo() {
         System.out.println("Usage: java -jar lightsocks.jar -c config.json --client | --server");
     }
 
     public static void main(String[] args) {
-
+        logger.info("starting.");
         String configPath = null;
         Mode mode = Mode.Unknown;
 
@@ -24,17 +25,22 @@ public class Main {
             if(args[i].equals("-c") && i + 1 < args.length) {
                 configPath = args[i + 1];
                 i++;
-            } else if(args[i].equals("--client")) {
-                mode = Mode.Client;
-            } else if(args[i].equals("--server")) {
-                mode = Mode.Server;
             } else if(args[i].equals("-h")) {
                 printHelpInfo();
+                System.exit(0);
             }
         }
 
-        if(mode == Mode.Unknown || configPath == null) {
-            printHelpInfo();
+
+        try {
+            if(Util.getJsonObjectFromFile(configPath).get("mode").getAsString().equalsIgnoreCase("server")) {
+                mode = Mode.Server;
+            } else if (Util.getJsonObjectFromFile(configPath).get("mode").getAsString().equalsIgnoreCase("local")) {
+                mode = Mode.Client;
+            }
+        } catch (Exception e) {
+            logger.error("", e);
+            System.exit(1);
         }
 
 
@@ -43,18 +49,17 @@ public class Main {
             if(localConfig == null) {
                 logger.info("error: failed to load local config, exit.");
                 System.exit(1);
+            } else {
+                logger.info(localConfig.toString());
             }
+
             Client local = new Client(localConfig.getHost(),localConfig.getHostPort(),localConfig.getLocalPort());
-            if(local == null) {
-                logger.info("error: failed to create local socket,exit.");
-                System.exit(1);
-            }
             Crypto crypto = localConfig.getCrypto();
             if(crypto==null) {
                 logger.info("error: failed to init cipher,exit.");
                 System.exit(1);
             } else {
-                local.crypto = crypto;
+                Client.crypto = crypto;
             }
             local.listen();
 
@@ -64,21 +69,21 @@ public class Main {
             if(serverConfig == null) {
                 logger.info("error: failed to load server config, exit.");
                 System.exit(1);
+            } else {
+                logger.info(serverConfig.toString());
             }
+
             Server server = new Server(serverConfig.getPort());
-            if(server == null) {
-                logger.info("error: failed to create server socket,exit.");
-                System.exit(1);
-            }
             Crypto crypto = serverConfig.getCrypto();
             if(crypto==null) {
                 logger.info("error: failed to init cipher,exit.");
                 System.exit(1);
             } else {
-                server.crypto = crypto;
+                Server.crypto = crypto;
             }
             server.listen();
         }
+
 
     }
 }

@@ -11,12 +11,12 @@ public class LocalConfig {
     * */
     private static LocalConfig instance = null;
 
-    private String password;
-    private String host;
-    private int hostPort;
-    private int localPort;
-    private String method;
-    private Crypto crypto;
+    private final String password;
+    private final String host;
+    private final int hostPort;
+    private final int localPort;
+    private final String method;
+    private final Crypto crypto;
 
     public static LocalConfig loadConfigFromFile(String filepath) {
         if(instance !=null) return instance;
@@ -24,7 +24,9 @@ public class LocalConfig {
         JsonObject jsonObject = Util.getJsonObjectFromFile(filepath);
         if(jsonObject == null || !checkJson(jsonObject)) {
             return null;
-        }else instance = new LocalConfig(jsonObject);
+        }else {
+            instance = new LocalConfig(jsonObject);
+        }
         return instance;
     }
 
@@ -49,7 +51,7 @@ public class LocalConfig {
     public String toString() {
         if(instance == null) return "LocalConfig Not Initilized.";
         else return
-                "Host: "+host+"\n"
+                "\nHost: "+host+"\n"
         +"HostPort: "+hostPort+"\n"
         +"LocalPort: "+localPort+"\n"
         +"Method: "+method+"\n"

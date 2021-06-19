@@ -10,7 +10,7 @@ public class SocksConnectionRequest {
      *       05  01  00  01  00000000             1010
      *       05  01  00  03  0962616964752E636F6D 0050
      * */
-    private byte[] data;
+    private final byte[] data;
 
     private SocksConnectionRequest(byte[] data) {
         this.data = data;
@@ -21,6 +21,7 @@ public class SocksConnectionRequest {
         if(data[0]!=0x05) return null;
         if(data[2]!=0x00) return null;
         if(data[3]!=0x01 && data[3]!=0x03 && data[3]!=0x04) return null;
+
         return new SocksConnectionRequest(data);
     }
 
@@ -48,24 +49,24 @@ public class SocksConnectionRequest {
 
     private String bytesToIpv4(byte[] addrBytes) {
         String ipv4AddrString = "";
-        for(int i=0;i<addrBytes.length;i++) {
-            ipv4AddrString = ipv4AddrString.concat((addrBytes[i] & 0xFF) +".");
+        for (byte addrByte : addrBytes) {
+            ipv4AddrString = ipv4AddrString.concat((addrByte & 0xFF) + ".");
         }
         return ipv4AddrString.substring(0,ipv4AddrString.length()-1);
     }
 
     private String bytesToDomain(byte[] addrBytes) {
-        StringBuffer domainString = new StringBuffer(addrBytes.length);
-        for (int i = 0; i < addrBytes.length; i++) {
-            domainString.append((char) addrBytes[i]);
+        StringBuilder domainString = new StringBuilder(addrBytes.length);
+        for (byte addrByte : addrBytes) {
+            domainString.append((char) addrByte);
         }
         return domainString.toString();
     }
 
     private String bytesToIpv6(byte[] addrBytes) {
         String ipv6AddrString = "";
-        for(int i= 0;i<addrBytes.length;i++) {
-            ipv6AddrString = ipv6AddrString.concat(String.valueOf(addrBytes[i])+":");
+        for (byte addrByte : addrBytes) {
+            ipv6AddrString = ipv6AddrString.concat(String.valueOf(addrByte) + ":");
         }
         return ipv6AddrString.substring(0,ipv6AddrString.length()-1);
     }

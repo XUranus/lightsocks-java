@@ -11,9 +11,9 @@ import java.net.Socket;
 public class Client {
     private final static Logger logger = LoggerFactory.getLogger(Client.class);
 
-    private String hostAddr;
-    private int hostPort;
-    private int localPort;
+    private final String hostAddr;
+    private final int hostPort;
+    private final int localPort;
 
     private ServerSocket localSocket;
     public static Crypto crypto;
@@ -31,7 +31,6 @@ public class Client {
             localSocket = new ServerSocket(localPort);
             logger.info("local start listening...");
             while(true) {
-                //Util.log("Local catch a socket");
                 Socket appSocket = localSocket.accept();
                 new ClientThread(hostAddr,hostPort,appSocket,this).start();
             }

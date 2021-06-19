@@ -10,10 +10,10 @@ public class ServerConfig {
 
     private static ServerConfig instance = null;
 
-    private String password;
-    private int port;
-    private String method;
-    private Crypto crypto;
+    private final String password;
+    private final int port;
+    private final String method;
+    private final Crypto crypto;
 
     public static ServerConfig loadConfigFromFile(String filepath) {
         if(instance !=null) return instance;
@@ -40,8 +40,8 @@ public class ServerConfig {
     }
 
     public String toString() {
-        if(instance == null) return "ServerConfig Not Initilized.";
-        else return "Port: "+port+"\n"
+        if(instance == null) return "ServerConfig Not Initialized.";
+        else return "\nPort: "+port+"\n"
                 +"Method: "+method+"\n"
                 +"Password: "+password+"\n";
     }
@@ -61,4 +61,5 @@ public class ServerConfig {
     public Crypto getCrypto() {
         return crypto;
     }
+
 }

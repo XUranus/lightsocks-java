@@ -13,15 +13,16 @@ public class SimpleCrypto implements Crypto {
     private final static Logger logger = LoggerFactory.getLogger(SimpleCrypto.class);
 
     private byte[] keyBytes;
-    private byte[] decodeKey;
-    private byte[] encodeKey;
+    private final byte[] decodeKey;
+    private final byte[] encodeKey;
 
     private SimpleCrypto(byte[] keyBytes) {
         this.keyBytes = keyBytes;
         this.decodeKey = new byte[256];
         this.encodeKey = new byte[256];
-        for(int i=0;i<keyBytes.length;i++)
-            decodeKey[i] = keyBytes[i];
+
+        System.arraycopy(keyBytes, 0, decodeKey, 0, keyBytes.length);
+
         for(int i=0;i<decodeKey.length;i++) {
             int t = (int)decodeKey[i];
             if(t<0) t+=256;

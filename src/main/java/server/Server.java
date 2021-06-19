@@ -13,8 +13,7 @@ public class Server {
 
     private final static Logger logger = LoggerFactory.getLogger(Server.class);
 
-    private int port;
-    private ServerSocket serverSocket;
+    private final int port;
     public static Crypto crypto;
 
     public Server(int port) {
@@ -24,7 +23,7 @@ public class Server {
     public void listen() {
        try {
            logger.info("server start listening...");
-           serverSocket = new ServerSocket(port);
+           ServerSocket serverSocket = new ServerSocket(port);
            while(true) {
                Socket socket = serverSocket.accept();
                new ServerThread(socket,this).start();
