@@ -1,4 +1,5 @@
 {
+    "mode": "local",
     "host":"127.0.0.1",
     "hostPort":9999,
     "localPort":8888,
