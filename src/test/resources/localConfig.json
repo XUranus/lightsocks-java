@@ -1,0 +1,8 @@
+{
+    "mode": "local",
+    "host":"127.0.0.1",
+    "hostPort":9999,
+    "localPort":8888,
+    "method":"aes-256-cfb",
+    "password":"1234567887654321"
+}

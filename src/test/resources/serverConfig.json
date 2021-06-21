@@ -1,0 +1,6 @@
+{
+    "mode": "server",
+    "port":9999,
+    "method":"aes-256-cfb",
+    "password":"1234567887654321"
+}

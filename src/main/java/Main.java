@@ -1,87 +1,76 @@
-import client.Client;
 import crypto.Crypto;
+import server.LocalServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import server.Server;
-import util.LocalConfig;
-import util.Mode;
-import util.ServerConfig;
-import util.Util;
+import server.RemoteServer;
+import util.*;
 
 public class Main {
 
     private final static Logger logger = LoggerFactory.getLogger(Main.class);
 
-    private static void printHelpInfo() {
-        System.out.println("Usage: java -jar lightsocks.jar -c config.json --client | --server");
+
+    public static void checkCrypto(Crypto crypto) {
+        if(crypto == null) {
+            logger.error("unknown crypto");
+            System.exit(1);
+        }
     }
 
     public static void main(String[] args) {
-        logger.info("starting.");
+        logger.info("starting...");
         String configPath = null;
         Mode mode = Mode.Unknown;
 
-        for(int i=0;i<args.length;i++) {
-            if(args[i].equals("-c") && i + 1 < args.length) {
+
+        // load config path
+        for (int i = 0; i < args.length; i++) {
+            if (args[i].equals("-c") && i + 1 < args.length) {
                 configPath = args[i + 1];
                 i++;
-            } else if(args[i].equals("-h")) {
-                printHelpInfo();
+            } else if (args[i].equals("-h")) {
+                Util.printHelpInfo();
                 System.exit(0);
             }
         }
 
+        // decide running mode
+        mode = ConfigLoader.loadConfigMode(configPath);
+        if (mode == Mode.Local) {
+            LocalConfig config = ConfigLoader.loadAsLocalConfig(configPath);
 
-        try {
-            if(Util.getJsonObjectFromFile(configPath).get("mode").getAsString().equalsIgnoreCase("server")) {
-                mode = Mode.Server;
-            } else if (Util.getJsonObjectFromFile(configPath).get("mode").getAsString().equalsIgnoreCase("local")) {
-                mode = Mode.Client;
-            }
-        } catch (Exception e) {
-            logger.error("", e);
-            System.exit(1);
-        }
-
-
-        if(mode == Mode.Client) {
-            LocalConfig localConfig = LocalConfig.loadConfigFromFile(configPath);
-            if(localConfig == null) {
-                logger.info("error: failed to load local config, exit.");
+            if (config == null) {
+                logger.info("failed to load local config.");
                 System.exit(1);
             } else {
-                logger.info(localConfig.toString());
+                logger.info(config.toString());
             }
 
-            Client local = new Client(localConfig.getHost(),localConfig.getHostPort(),localConfig.getLocalPort());
-            Crypto crypto = localConfig.getCrypto();
-            if(crypto==null) {
-                logger.info("error: failed to init cipher,exit.");
-                System.exit(1);
-            } else {
-                Client.crypto = crypto;
-            }
-            local.listen();
+            checkCrypto(config.getCrypto());
+
+            LocalServer localServer = new LocalServer(config.getHost(), config.getHostPort(), config.getLocalPort());
+            LocalServer.crypto = config.getCrypto();
+            localServer.listen();
 
         } else if (mode == Mode.Server) {
+            ServerConfig config = ConfigLoader.loadAsServerConfig(configPath);
 
-            ServerConfig serverConfig = ServerConfig.loadConfigFromFile(configPath);
-            if(serverConfig == null) {
-                logger.info("error: failed to load server config, exit.");
+            if (config == null) {
+                logger.info("failed to load server config.");
                 System.exit(1);
             } else {
-                logger.info(serverConfig.toString());
+                logger.info(config.toString());
             }
 
-            Server server = new Server(serverConfig.getPort());
-            Crypto crypto = serverConfig.getCrypto();
-            if(crypto==null) {
-                logger.info("error: failed to init cipher,exit.");
-                System.exit(1);
-            } else {
-                Server.crypto = crypto;
-            }
-            server.listen();
+            checkCrypto(config.getCrypto());
+
+            RemoteServer remoteServer = new RemoteServer(config.getPort());
+            RemoteServer.crypto = config.getCrypto();
+            remoteServer.listen();
+
+        } else {
+            logger.error("unknown running mode");
+            System.exit(1);
         }
 
 

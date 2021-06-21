@@ -13,6 +13,10 @@ public class Util {
 
     private final static Logger logger = LoggerFactory.getLogger(Util.class);
 
+    public static void printHelpInfo() {
+        System.out.println("Usage: java -jar lightsocks.jar -c config.json --client | --server");
+    }
+
     public static String bytesToHexString(byte[] bArray, int len) {
         StringBuffer sb = new StringBuffer(len);
         String sTemp;
