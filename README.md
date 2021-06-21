@@ -44,7 +44,7 @@ mvn package -Dmaven.test.skip=true
 Method:
  - [x] none(无加密)
  - [x] Simple(置换算法)
- - [ ] AES
+ - [x] AES-256-CFB(password必须是16字节)
 
 
 3. 运行  

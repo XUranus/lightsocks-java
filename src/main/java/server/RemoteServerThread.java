@@ -1,5 +1,6 @@
 package server;
 
+import crypto.AES256CFB;
 import crypto.Crypto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -163,6 +164,9 @@ public class RemoteServerThread extends Thread {
 
     private boolean encryptWriteAllBytes(OutputStream out, byte[] rawBuffer) {
         try {
+            if(RemoteServer.crypto instanceof AES256CFB) {
+                rawBuffer = AES256CFB.padding(rawBuffer);
+            }
             byte[] encryptBuffer = RemoteServer.crypto.encrypt(rawBuffer);
             out.write(encryptBuffer);
             out.flush();
@@ -172,5 +176,6 @@ public class RemoteServerThread extends Thread {
             return false;
         }
     }
+
 
 }

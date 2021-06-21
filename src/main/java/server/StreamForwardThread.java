@@ -44,13 +44,11 @@ public class StreamForwardThread extends Thread {
             if (useEncrypt) {
                 while ((len = crypto.readEncrypt(in, buffer)) != -1) {
                     if (len == 0) continue;
-                    byte[] tmp = Arrays.copyOf(buffer, len);
                     out.write(buffer, 0, len);
                 }
             } else {
                 while ((len = crypto.readDecrypt(in, buffer)) != -1) {
                     if (len == 0) continue;
-                    byte[] tmp = Arrays.copyOf(buffer, len);
                     out.write(buffer, 0, len);
                 }
             }

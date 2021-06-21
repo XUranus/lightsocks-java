@@ -25,6 +25,17 @@ public class AES256CFB implements Crypto {
         this.key = key;
     }
 
+    //240-255 => 256
+    /**
+     * ----------------------------------
+     * | len (1) | bytes with 0 padding
+     * ----------------------------------
+     *  1 =< len <= 254
+     */
+    private final int AES_MAX_LEN  = 254;
+    private final int AES_BLOCK_SIZE = 256;
+
+
     @Override
     public byte[] encrypt(byte[] data) {
         if (data == null) return null;
@@ -58,14 +69,26 @@ public class AES256CFB implements Crypto {
         return decrypted;
     }
 
+//    //240-255 => 256
+//    /**
+//     * ----------------------------------
+//     * | len (1) | bytes with 0 padding
+//     * ----------------------------------
+//     *  1 =< len <= 254
+//     */
+//    private final int AES_MAX_LEN  = 254;//raw
+//    private final int AES_PADDING_SIZE = 256;
+
     @Override
     public int readEncrypt(InputStream in, byte[] buffer) throws IOException {
         // temp buffer size must be smaller than en encrypted buffer (byte[] buffer)
-        byte[] tmpBuffer = new byte[buffer.length - 1];
+        assert buffer.length >= AES_BLOCK_SIZE;
+        byte[] tmpBuffer = new byte[AES_MAX_LEN];
         int len = in.read(tmpBuffer);
         if (len > 0) {
-            byte[] finalTempBuffer = new byte[len];
-            System.arraycopy(tmpBuffer, 0, finalTempBuffer, 0, len);
+            byte[] finalTempBuffer = new byte[len + 1];
+            finalTempBuffer[0] = (byte) len;
+            System.arraycopy(tmpBuffer, 0, finalTempBuffer, 1, len);
             byte[] encrypted = encrypt(finalTempBuffer);
             System.arraycopy(encrypted, 0, buffer, 0, encrypted.length);
             return encrypted.length;
@@ -73,26 +96,39 @@ public class AES256CFB implements Crypto {
         return len;
     }
 
+    //    //240-255 => 256
+//    /**
+//     * ----------------------------------
+//     * | len (1) | bytes with 0 padding
+//     * ----------------------------------
+//     *  1 =< len <= 254
+//     */
+//    private final int AES_MAX_LEN  = 254;//raw
+//    private final int AES_PADDING_SIZE = 256;
+
     @Override
     public int readDecrypt(InputStream in, byte[] buffer) throws IOException {
-        // buffer size must bigger than AES_BLOCK_SIZE
+        assert buffer.length >= AES_MAX_LEN;
 
-        int DEFAULT_BLOCK_SIZE = 1024 * 256; // 256 K
-        byte[] tmpBuffer = new byte[DEFAULT_BLOCK_SIZE];
+        byte[] tmpBuffer = new byte[AES_BLOCK_SIZE];
         int len = in.read(tmpBuffer);
-        if (len < 0) {
-            return len;
-        }
 
         if(len > 0) {
-            logger.warn("AES decrypt read bytes = " + len);
-            byte[] decrypted = decrypt(Arrays.copyOf(tmpBuffer, len));
-            System.arraycopy(decrypted,0, buffer, 0, decrypted.length);
-            return decrypted.length;
+            byte[] decrypted =  decrypt(Arrays.copyOf(tmpBuffer, len));
+            int size = decrypted[0] & 0xFF;
+            byte[] realDecrypted = new byte[size];
+            System.arraycopy(decrypted, 1, realDecrypted, 0, size);
+            System.arraycopy(realDecrypted, 0, buffer, 0, size);
+            return size;
         }
-
 
         return len; // 0 or -1
     }
 
+    public static byte[] padding(byte[] data) {
+        byte[] data2 = new byte[data.length + 1];
+        System.arraycopy(data, 0, data2, 1, data.length);
+        data2[0] = (byte) data.length;
+        return data2;
+    }
 }
